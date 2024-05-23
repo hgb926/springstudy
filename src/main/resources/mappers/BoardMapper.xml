@@ -5,8 +5,8 @@
 
 <mapper namespace="com.study.springstudy.springmvc.chap04.mapper.BoardMapper">
 
-    <select id="findAll" resultType="board">
-        SELECT * FROM tbl_board
+    <!--  동적 SQL 조건을 분리  -->
+    <sql id="search">
         <if test="type == 'title'">
             WHERE title LIKE CONCAT('%', #{keyword}, '%')
         </if>
@@ -18,8 +18,25 @@
         </if>
         <if test="type == 'tc'">
             WHERE title LIKE CONCAT('%', #{keyword}, '%')
-                OR content LIKE CONCAT('%', #{keyword}, '%')
+            OR content LIKE CONCAT('%', #{keyword}, '%')
         </if>
+    </sql>
+
+
+    <select id="findAll" resultType="com.study.springstudy.springmvc.chap04.dto.BoardFindAllDto">
+        SELECT
+            B.board_no,
+            B.title,
+            B.content,
+            B.writer,
+            B.reg_date_time,
+            B.view_count,
+            COUNT(R.reply_no) AS reply_count
+        FROM tbl_board B
+        LEFT JOIN tbl_reply R
+        ON B.board_no = R.board_no
+        <include refid="search" />
+        GROUP BY B.board_no
         ORDER BY board_no DESC
         LIMIT #{pageStart}, #{amount}
     </select>
@@ -51,6 +68,7 @@
     <select id="count" resultType="int">
         SELECT COUNT (*)
         FROM tbl_board
+        <include refid="search"/>
     </select>
 
 

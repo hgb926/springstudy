@@ -123,11 +123,11 @@
     </div>
 
 <%--   댓글 영역     --%>
-<%--    <div>--%>
-<%--        <c:forEach var="r" items="${bbb.replies}">--%>
-<%--            <div>${r.replyText}</div>--%>
-<%--        </c:forEach>--%>
-<%--    </div>--%>
+    <div>
+        <c:forEach var="r" items="${bbb.replies}">
+            <div>${r.replyText}</div>
+        </c:forEach>
+    </div>
 
 </div>
 </body>

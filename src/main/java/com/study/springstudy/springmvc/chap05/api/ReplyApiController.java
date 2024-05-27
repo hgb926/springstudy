@@ -6,15 +6,22 @@ import com.study.springstudy.springmvc.chap05.entity.Reply;
 import com.study.springstudy.springmvc.chap05.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Delete;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/replies")
 @RequiredArgsConstructor // 주입을 위해
 @Slf4j
+@CrossOrigin // CORS 정책 허용 범위 설정
 public class ReplyApiController {
 
     private final ReplyService replyService;
@@ -45,17 +52,64 @@ public class ReplyApiController {
     // 댓글 생성 요청
     // @RequestBody : 클라이언트가 전송한 데이터를 JSON으로 받아서 파싱
     @PostMapping // ("")를 비워두면 위에 @RequestMapping("/api/v1/replies")
-    public ResponseEntity<?> posts(@RequestBody ReplyPostDto dto) {
+    public ResponseEntity<?> posts(@Validated @RequestBody ReplyPostDto dto, BindingResult result) {
+
+        // BindingResult 는 입력값 검증 결과 데이터를 갖고 있는 객체.
+        // 입력값이 유효하지 않다면 클라이언트에게 구체적으로 알려줄 객체
+
+
         log.info("/api/v1/replies : POST");
         log.debug("parameter: {}", dto);
+
+        if (result.hasErrors()) {
+            // BindingResult 에서 에러가 발생했다면,
+            // body 에서 클라이언트에게 보낼 에러메세지를 직접 만들 수 있다.
+            Map<String, String> errors = makeValidationMessageMap(result);
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(errors);
+        }
+
         boolean flag = replyService.register(dto);
 
         if (!flag) return ResponseEntity.internalServerError().body("댓글 등록 실패");
 
-
+        
         return ResponseEntity
                 .ok()
                 .body(replyService.getReplies(dto.getBno()));
     }
-    
+
+
+    // 삭제 처리 요청
+    @DeleteMapping("/{rno}")
+    public ResponseEntity<?> delete(@PathVariable long rno) {
+        List<ReplyDetailDto> dtoList = replyService.remove(rno);
+
+        return ResponseEntity
+                .ok()
+                .body(dtoList);
+    }
+
+
+
+
+
+
+
+
+
+
+    private Map<String, String> makeValidationMessageMap(BindingResult result) {
+        Map<String, String> errors = new HashMap<>();
+        // 에러 정보가 모여있는 리스트
+        List<FieldError> fieldErrors = result.getFieldErrors();
+        // errors 에다가 필드들을 담는다.
+        for (FieldError error : fieldErrors) {
+            errors.put(error.getField(), error.getDefaultMessage());
+        }
+        return errors;
+    }
+
 }

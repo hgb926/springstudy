@@ -1,8 +1,11 @@
 package com.study.springstudy.springmvc.chap05.service;
 
 
+import com.study.springstudy.springmvc.chap04.common.Page;
+import com.study.springstudy.springmvc.chap04.common.PageMaker;
 import com.study.springstudy.springmvc.chap05.dto.request.ReplyPostDto;
 import com.study.springstudy.springmvc.chap05.dto.response.ReplyDetailDto;
+import com.study.springstudy.springmvc.chap05.dto.response.ReplyListDto;
 import com.study.springstudy.springmvc.chap05.entity.Reply;
 import com.study.springstudy.springmvc.chap05.mapper.ReplyMapper;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +25,17 @@ public class ReplyService {
     private final ReplyMapper replyMapper;
 
     // 댓글 목록 전체조회
-    public List<ReplyDetailDto> getReplies(long boardNo) {
-        List<Reply> replies = replyMapper.findAll(boardNo);
-        return replies.stream()
+    public ReplyListDto getReplies(long boardNo, Page page) {
+        List<Reply> replies = replyMapper.findAll(boardNo, page);
+
+        List<ReplyDetailDto> dtoList = replies.stream()
                 .map(r -> new ReplyDetailDto(r))
-                .collect(Collectors.toList()); // return 에서 dto 변환 과정
+                .collect(Collectors.toList());
+
+        return ReplyListDto.builder()
+                .replies(dtoList)
+                .pageInfo(new PageMaker(page, replyMapper.count(boardNo)))
+                .build(); // return 에서 dto 변환 과정
     }
 
     // 댓글 입력
@@ -49,12 +58,12 @@ public class ReplyService {
 
     // 댓글 삭제
     @Transactional
-    public List<ReplyDetailDto> remove(long rno) {
+    public ReplyListDto remove(long rno) {
         long bno = replyMapper.findBno(rno);
         // 삭제 후 삭제된 목록을 리턴
         boolean flag = replyMapper.delete(rno);
         // 댓글 번호로 원본 글 번호 찾기
-        return flag ? getReplies(bno) : Collections.emptyList();
+        return flag ? getReplies(bno, new Page(1, 10)) : null;
 
     }
 

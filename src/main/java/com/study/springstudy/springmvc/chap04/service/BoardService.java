@@ -51,11 +51,11 @@ public class BoardService {
         Board b = boardMapper.findOne(bno);
         if (b != null) boardMapper.upViewCount(bno);
 
-        // 댓글 목록 조회
-        List<Reply> replies = replyMapper.findAll(bno);
+        // 댓글 목록 조회 - 0528 비동기 처리를 위해 주석처리
+//        List<Reply> replies = replyMapper.findAll(bno);
 
         BoardDetailResponseDto responseDto = new BoardDetailResponseDto(b);
-        responseDto.setReplies(replies);
+//        responseDto.setReplies(replies);
 
         return responseDto;
     }

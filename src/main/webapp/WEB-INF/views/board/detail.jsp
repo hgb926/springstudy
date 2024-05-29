@@ -260,5 +260,20 @@
 
 <script type="module" src="/assets/js/reply.js"></script>
 
+<%--<script>--%>
+<%--    const $container = document.getElementById('replyData');--%>
+
+<%--    $container.addEventListener('click', e => {--%>
+<%--        if (!e.target.matches('#replyModBtn')) return;--%>
+<%--        const $modify = e.delegateTarget--%>
+<%--        console.log($modify)--%>
+
+<%--        const $modalText = document.getElementById('modReplyText')--%>
+<%--        // console.log($modalText)--%>
+<%--        $modalText.setAttribute('placeholder', $modify.value)--%>
+<%--    })--%>
+
+<%--</script>--%>
+
 </body>
 </html>

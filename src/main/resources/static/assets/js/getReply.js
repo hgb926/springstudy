@@ -82,32 +82,6 @@ function renderPage({ begin, end, finalPage, pageInfo }) {
 }
 
 
-function deleteReply({ pageInfo, replies }) {
-    const $row = document.querySelector('.row')
-    $row.addEventListener('click', e => {
-        if (e.target.matches('#replyDelBtn')) {
-            e.preventDefault()
-            const $delBtn = e.target.closest('#replyDelBtn')
-            const href = $delBtn.getAttribute('href');
-
-            console.log(replies)
-            console.log(href)
-            const pageNo = pageInfo.pageInfo.pageNo;
-
-
-
-            fetch(`http://localhost:8383/api/v1/replies/${href}`, {
-                method: 'DELETE'
-            })
-                .then(res => res.json())
-                .then(json => {
-                    console.log(json)
-                })
-        fetchReplies(pageNo)
-        }
-
-    })
-}
 
 
 
@@ -170,8 +144,8 @@ export async function fetchReplies(pageNo=1) {
     // 댓글 목록 렌더링
 
     renderReplies(replyResponse);
-    appendActivePage(replyResponse);
-    deleteReply(replyResponse)
+    // appendActivePage(replyResponse);
+
 }
 
 
@@ -259,6 +233,8 @@ export async function fetchInfScrollReplies(pageNo=1) {
         document.getElementById('replyCnt').textContent = totalReplies;
         // 초기 댓글 reset
         document.getElementById('replyData').innerHTML = '';
+
+        setupInfiniteScroll();
     }
 
     // 댓글 목록 렌더링

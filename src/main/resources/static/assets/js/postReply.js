@@ -34,6 +34,7 @@ export const fetchReplyPost = async () => {
     writerInput.value = '';
 
     renderReplies(replies)
+    // window.scrollTo(0,900)
 
 
 }

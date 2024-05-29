@@ -1,14 +1,12 @@
 package com.study.springstudy.springmvc.chap05.api;
 
 import com.study.springstudy.springmvc.chap04.common.Page;
+import com.study.springstudy.springmvc.chap05.dto.request.ReplyModifyDto;
 import com.study.springstudy.springmvc.chap05.dto.request.ReplyPostDto;
-import com.study.springstudy.springmvc.chap05.dto.response.ReplyDetailDto;
 import com.study.springstudy.springmvc.chap05.dto.response.ReplyListDto;
-import com.study.springstudy.springmvc.chap05.entity.Reply;
 import com.study.springstudy.springmvc.chap05.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Delete;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -27,7 +25,7 @@ import java.util.Map;
 public class ReplyApiController {
 
     private final ReplyService replyService;
-    
+
     // 댓글 목록 조회 요청
     // URL : /api/v1/replise/원본글번호/page/페이지번호     -    GET -> 목록조회
     // @PathVariable : URL에 붙어있는 변수값을 읽는 아노테이션
@@ -45,7 +43,7 @@ public class ReplyApiController {
         }
         log.info("/api/v1/replies/{} : GET", bno);
 
-        ReplyListDto replies = replyService.getReplies(bno, new Page(pageNo, 5));
+        ReplyListDto replies = replyService.getReplies(bno, new Page(pageNo, 10));
 //        log.debug("first reply : {}", replies.get(0));
 
         return ResponseEntity
@@ -79,7 +77,7 @@ public class ReplyApiController {
 
         if (!flag) return ResponseEntity.internalServerError().body("댓글 등록 실패");
 
-        
+
         return ResponseEntity
                 .ok()
                 .body(replyService.getReplies(dto.getBno(), new Page(1, 10)));
@@ -96,11 +94,34 @@ public class ReplyApiController {
                 .body(dtoList);
     }
 
+    // 댓글 수정 요청
+//    @PutMapping  // 전체 수정
+//    @PatchMapping   // 일부 수정
 
+    // put + patch 매핑, url 을 비워두면 맨 위에 적은 url로 기본 설정됨.
+    // put, patch 를 둘 다 받기 위해
+    @RequestMapping(method = {RequestMethod.PUT, RequestMethod.PATCH})
+    public ResponseEntity<?> modify(
+            @Validated @RequestBody ReplyModifyDto dto
+            , BindingResult result
+    ) {
 
+        log.info("/api/v1/replies : PUT, PATCH");
+        log.debug("parameter: {}", dto);
 
+        if (result.hasErrors()) {
+            Map<String, String> errors = makeValidationMessageMap(result);
 
+            return ResponseEntity
+                    .badRequest()
+                    .body(errors);
+        }
 
+        ReplyListDto replyListDto = replyService.modify(dto);
+
+        return ResponseEntity.ok().body(replyListDto);
+
+    }
 
 
 

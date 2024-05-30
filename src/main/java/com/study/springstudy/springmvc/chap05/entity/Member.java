@@ -19,8 +19,12 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode
 @Builder
 public class Member {
+
     private String account;
+
+    @Setter
     private String password;
+
     private String name;
     private String email;
     private Auth auth;

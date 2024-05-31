@@ -128,7 +128,7 @@
     <h1>${bbb.boardNo}번 게시물 내용~ </h1>
     <h2># 작성일자: ${bbb.regDateTime}</h2>
     <label for="writer">작성자</label>
-    <input type="text" id="writer" name="writer" value="${bbb.writer}" readonly>
+    <input type="text" id="writer" name="writer" value="${bbb.name}" readonly>
     <label for="title">제목</label>
     <input type="text" id="title" name="title" value="${bbb.title}" readonly>
     <label for="content">내용</label>

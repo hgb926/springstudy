@@ -1,17 +1,23 @@
 package com.study.springstudy.springmvc.chap05.api;
 
+import com.study.springstudy.springmvc.chap05.dto.request.LoginDto;
 import com.study.springstudy.springmvc.chap05.dto.request.SignUpDto;
+import com.study.springstudy.springmvc.chap05.dto.response.LoginUserInfoDto;
+import com.study.springstudy.springmvc.chap05.service.LoginResult;
 import com.study.springstudy.springmvc.chap05.service.MemberService;
+import com.study.springstudy.springmvc.interceptor.BoardInterceptor;
+import com.study.springstudy.springmvc.util.LoginUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/members")
@@ -19,49 +25,117 @@ import org.springframework.web.servlet.ModelAndView;
 @RequiredArgsConstructor
 public class MemberController {
 
-    // ModelAndView 를 사용하면 jsp도 포워딩 가능하고
-    // 동기 비동기 둘다 가능, JSON 날릴땐 @ResponesBody
-
-    /*
-    @GetMapping("/hello")
-    public String hello() {
-        return ("board/write");
-    }
-
-    ↓ ↑ 서로 동일하다
-
-    public ModelAndView hello() {
-        return new ModelAndView("board/write);
-    }
-     */
-
     private final MemberService memberService;
+    private final BoardInterceptor interceptor;
 
-    // 회원 가입 양식 열기
+    // 회원가입 양식 열기
     @GetMapping("/sign-up")
     public void signUp() {
         log.info("/members/sign-up GET : forwarding to sign-up.jsp");
-//        return "members/sign-up";
-        // return의 URL이 컨트롤러의 기본 경로면 void도 쌉가능
+        // return "members/sign-up";
     }
 
     // 회원가입 요청 처리
     @PostMapping("/sign-up")
     public String signUp(@Validated SignUpDto dto) {
-        log.info("/members/sign-up POST");
+        log.info("/members/sign-up POST ");
         log.debug("parameter: {}", dto);
 
         boolean flag = memberService.join(dto);
-        return flag ? "redirect:/board/list" : "redirect:/members/sign-up";
+
+        return flag ? "redirect:/members/sign-in" : "redirect:/members/sign-up";
     }
 
     // 아이디, 이메일 중복검사 비동기 요청 처리
     @GetMapping("/check")
-    @ResponseBody // Rest Controller가 아니므로 비동기 처리 시 @ResponseBody
+    @ResponseBody
     public ResponseEntity<?> check(String type, String keyword) {
-        boolean flag = memberService.checkIdentity(type, keyword);
-        log.debug("{} 중복 체크 결과? {}", type, flag);
-        return ResponseEntity.ok().body(flag);
+        boolean flag = memberService.checkIdentifier(type, keyword);
+        log.debug("{} 중복체크 결과? {}", type, flag);
+        return ResponseEntity
+                .ok()
+                .body(flag);
+    }
+
+    // 로그인 양식 열기
+    @GetMapping("/sign-in")
+    public String signIn(HttpSession session
+                        ,@RequestParam(required = false) String redirect) {
+
+        // 로그인을 한 사람이 이 요청을 보내면 돌려보낸다.
+        // 세션의 특정 데이터를 확인해보면 된다.
+//        LoginUserInfoDto login
+//                = (LoginUserInfoDto) session.getAttribute("login");
+//        if (login != null) { // login 한 user
+//            return "redirect:/"; // 그냥 home으로 돌려보냄
+//        }
+
+        // 로그인을 한 사람이 이 요청을 보내면 돌려보낸다.
+//        if (LoginUtil.isLoggedIn(session)) {
+//            return "redirect:/";
+//        }
+
+        session.setAttribute("redirect", redirect);
+        log.debug("redirect: {}", redirect);
+
+        log.info("/members/sign-in GET : forwarding to sign-in.jsp");
+        return "members/sign-in";
+    }
+
+    // 로그인 요청 처리
+    @PostMapping("/sign-in")
+    public String signIn(LoginDto dto,
+                         RedirectAttributes ra,
+                         HttpServletRequest request) {
+        log.info("/members/sign-in POST");
+        log.debug("parameter: {}", dto);
+
+//        log.debug("message: {}", message);
+        // 세션 얻기 (상태를 기억해줄 객체(직원))
+        HttpSession session = request.getSession();
+
+        LoginResult result = memberService.authenticate(dto, session);
+
+        // 로그인 검증 결과를 JSP에게 보내기
+        // Redirect시에 Redirect된 페이지에 데이터를 보낼 때는
+        // Model객체를 사용할 수 없음
+        // 왜냐면 Model객체는 request객체를 사용하는데 해당 객체는
+        // 한번의 요청이 끝나면 메모리에서 제거된다. 그러나 redirect는
+        // 요청이 2번 발생하므로 다른 request객체를 jsp가 사용하게 됨
+
+//        model.addAttribute("result", result); // (X)
+        ra.addFlashAttribute("result", result);
+
+
+        if (result == LoginResult.SUCCESS) {
+
+            // 혹시 세션에 리다이렉트 URL이 있다면
+            String redirect = (String) session.getAttribute("redirect");
+            if (redirect != null) {
+                session.removeAttribute("redirect");
+                return "redirect:" + redirect;
+            }
+
+            return "redirect:/index"; // 로그인 성공시
+        }
+
+        return "redirect:/members/sign-in";
+    }
+
+
+    @GetMapping("/sign-out")
+    public String signOut(HttpSession session) {
+
+        // 세션 구하기 (↑ 위에 파라미터로 구함)
+
+        // 세션에서 로그인 기록 삭제
+        session.removeAttribute("login");
+
+        //  세션을 초기화 (reset)
+        session.invalidate();
+
+        // 홈으로 보내기
+        return "redirect:/";
     }
 
 }

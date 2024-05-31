@@ -97,11 +97,16 @@
                             ${b.shortContent}
                     </div>
                 </section>
+
+            <%--  x버튼 영역  --%>
+            <%--  관리자 이거나 본인이 쓴글에만 렌더링되도록  --%>
+                <c:if test="${login.auth == 'ADMIN' || login.account == b.account}">
                 <div class="card-btn-group">
                     <button class="del-btn" data-href="/board/delete?bno=${b.bno}">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
+                </c:if>
             </div>
             <!-- end div.card-wrapper -->
         </c:forEach>
@@ -169,8 +174,22 @@
 </div>
 
 
-
 <script>
+
+// (select)
+// db 조회 -> DTO에서 받아줌 ->
+// service에서 정제 -> controller ->
+// jsp 렌더링
+
+    // "redirect:/board/list?message=not-authorized";
+    const deleteParam = new URLSearchParams(window.location.search);
+    const message = deleteParam.get('message')
+    if (message === 'not-authorized') {
+        alert("로그인이 필요한 서비스입니다.")
+    }
+
+
+
 
     const $cardContainer = document.querySelector('.card-container');
 

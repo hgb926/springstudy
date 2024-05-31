@@ -31,7 +31,8 @@
             B.writer,
             B.reg_date_time,
             B.view_count,
-            COUNT(R.reply_no) AS reply_count
+            COUNT(R.reply_no) AS reply_count,
+            B.account
         FROM tbl_board B
         LEFT JOIN tbl_reply R
         ON B.board_no = R.board_no
@@ -43,15 +44,24 @@
 
 
     <select id="findOne" resultType="board">
-        SELECT * FROM tbl_board
+        SELECT
+        B.board_no,
+        B.title,
+        B.content,
+        B.writer,
+        B.reg_date_time,
+        B.view_count,
+        M.account
+        FROM tbl_board B JOIN tbl_member M
+        ON B.account = M.account
         WHERE board_no = #{boardNo}
     </select>
 
     <insert id="save">
         INSERT INTO tbl_board
-            (writer, content, title)
+            (writer, content, title, account)
         VALUES
-            (#{writer}, #{content}, #{title})
+            (#{writer}, #{content}, #{title}, #{account})
     </insert>
 
     <delete id="delete">

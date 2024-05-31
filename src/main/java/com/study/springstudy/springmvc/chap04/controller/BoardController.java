@@ -6,13 +6,17 @@ import com.study.springstudy.springmvc.chap04.dto.BoardDetailResponseDto;
 import com.study.springstudy.springmvc.chap04.dto.BoardListResponseDto;
 import com.study.springstudy.springmvc.chap04.dto.BoardWriteRequestDto;
 import com.study.springstudy.springmvc.chap04.service.BoardService;
+import com.study.springstudy.springmvc.util.LoginUtil;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -20,8 +24,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardController {
 
-//    private final BoardRepository repository;
+    private static final Logger log = LoggerFactory.getLogger(BoardController.class);
+    //    private final BoardRepository repository;
     private final BoardService service;
+    private final BoardService boardService;
 
     // 1. 목록 조회 요청 (/board/list : GET)
     @GetMapping("/list")
@@ -39,6 +45,8 @@ public class BoardController {
         model.addAttribute("maker", maker);
 //        model.addAttribute("s", page);
 
+
+
         return "board/list";
     }
 
@@ -52,13 +60,13 @@ public class BoardController {
     // 3. 게시글 등록 요청 (/board/write : POST)
     // -> 목록조회 요청 리다이렉션
     @PostMapping("/write")
-    public String write(BoardWriteRequestDto dto) {
+    public String write(BoardWriteRequestDto dto, HttpSession session) {
         System.out.println("/board/write POST! ");
 
         // 1. 브라우저가 전달한 게시글 내용 읽기
         System.out.println("dto = " + dto);
 
-        service.insert(dto);
+        service.insert(dto, session);
 
         return "redirect:/board/list";
     }
@@ -66,12 +74,18 @@ public class BoardController {
     // 4. 게시글 삭제 요청 (/board/delete : GET)
     // -> 목록조회 요청 리다이렉션
     @GetMapping("/delete")
-    public String delete(int bno) {
+    public String delete(int bno, HttpServletRequest request) {
         System.out.println("/board/delete GET");
 
-        service.remove(bno);
+        String loggedUserAccount = LoginUtil.getLoggedUserAccount(request.getSession());
+        BoardDetailResponseDto detail = boardService.detail(bno);
 
-        return "redirect:/board/list";
+        if (detail != null && detail.getAccount().equals(loggedUserAccount)) {
+            boardService.remove(bno);
+            return "redirect:/board/list";
+        } else {
+            return   "redirect:/members/sign-in?message=not-authorized";
+        }
     }
 
     // 5. 게시글 상세 조회 요청 (/board/detail : GET)

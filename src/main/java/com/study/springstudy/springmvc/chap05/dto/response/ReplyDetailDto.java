@@ -20,6 +20,7 @@ public class ReplyDetailDto {
 
 //    @JsonFormat(pattern = "yyyy년 MM월 dd일 HH:mm")
     private LocalDateTime createAt;
+    private String account; // 댓글 작성자 계정명
 
     // 엔터티를 DTO로 변환하는 생성자
     public ReplyDetailDto(Reply reply) {
@@ -27,6 +28,7 @@ public class ReplyDetailDto {
         this.text = reply.getReplyText();
         this.writer = reply.getReplyWriter();
         this.createAt = reply.getReplyDate();
+        this.account = reply.getAccount();
     }
 
 }

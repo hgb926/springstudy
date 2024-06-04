@@ -1,18 +1,20 @@
 import { BASE_URL } from "./reply.js";
 import { fetchInfScrollReplies } from "./getReply.js";
+import { callApi } from "./api.js";
 
 // 댓글 삭제 비동기 요청 처리 함수
 const fetchDeleteReply = async (rno) => {
-    const res = await fetch(`${BASE_URL}/${rno}`, {
-        method: 'DELETE'
-    });
-
-    if (res.status !== 200) {
-        alert("삭제에 실패했습니다!")
-        return;
-    } else {
-        alert("삭제 성공!")
-    }
+    // const res = await fetch(`${BASE_URL}/${rno}`, {
+    //     method: 'DELETE'
+    // });
+    //
+    // if (res.status !== 200) {
+    //     alert("삭제에 실패했습니다!")
+    //     return;
+    // } else {
+    //     alert("삭제 성공!")
+    // }
+    await callApi(`${BASE_URL}/${rno}`, 'DELETE')
 
     fetchInfScrollReplies();
 

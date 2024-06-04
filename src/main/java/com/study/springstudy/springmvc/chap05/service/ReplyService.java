@@ -1,6 +1,5 @@
 package com.study.springstudy.springmvc.chap05.service;
 
-
 import com.study.springstudy.springmvc.chap04.common.Page;
 import com.study.springstudy.springmvc.chap04.common.PageMaker;
 import com.study.springstudy.springmvc.chap05.dto.request.ReplyModifyDto;
@@ -9,11 +8,13 @@ import com.study.springstudy.springmvc.chap05.dto.response.ReplyDetailDto;
 import com.study.springstudy.springmvc.chap05.dto.response.ReplyListDto;
 import com.study.springstudy.springmvc.chap05.entity.Reply;
 import com.study.springstudy.springmvc.chap05.mapper.ReplyMapper;
+import com.study.springstudy.springmvc.util.LoginUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,7 @@ public class ReplyService {
 
     // 댓글 목록 전체조회
     public ReplyListDto getReplies(long boardNo, Page page) {
+
         List<Reply> replies = replyMapper.findAll(boardNo, page);
 
         List<ReplyDetailDto> dtoList = replies.stream()
@@ -35,23 +37,27 @@ public class ReplyService {
         return ReplyListDto.builder()
                 .replies(dtoList)
                 .pageInfo(new PageMaker(page, replyMapper.count(boardNo)))
-                .build(); // return 에서 dto 변환 과정
+                .build();
     }
 
     // 댓글 입력
-    public boolean register(ReplyPostDto dto) {
+    public boolean register(ReplyPostDto dto, HttpSession session) {
         Reply reply = Reply.builder()
                 .replyText(dto.getText())
                 .replyWriter(dto.getAuthor())
                 .boardNo(dto.getBno())
+                .account(LoginUtil.getLoggedUserAccount(session))
                 .build();
+
+
         boolean flag = replyMapper.save(reply);
-        if (flag) log.info("댓글 등록 성공! - {}", dto);
+        if (flag) log.info("댓글 등록 성공!! - {}", dto);
         else log.warn("댓글 등록 실패");
+
         return flag;
     }
 
-    // 댓글 수정 중간 처리
+    // 댓글 수정
     public ReplyListDto modify(ReplyModifyDto dto) {
 
         replyMapper.modify(dto.toEntity());
@@ -62,14 +68,12 @@ public class ReplyService {
     // 댓글 삭제
     @Transactional
     public ReplyListDto remove(long rno) {
+        // 댓글 번호로 원본 글번호 찾기
         long bno = replyMapper.findBno(rno);
-        // 삭제 후 삭제된 목록을 리턴
         boolean flag = replyMapper.delete(rno);
-        // 댓글 번호로 원본 글 번호 찾기
+        // 삭제 후 삭제된 목록을 리턴
         return flag ? getReplies(bno, new Page(1, 10)) : null;
-
     }
-
 
 
 }

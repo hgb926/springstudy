@@ -25,4 +25,6 @@ public class ReplyListDto {
      */
     private List<ReplyDetailDto> replies;
     private PageMaker pageInfo; // 필드명이 key값
+    @Setter
+    private LoginUserInfoDto loginUser;
 }

@@ -53,6 +53,10 @@
             <!-- 댓글 쓰기 영역 -->
             <div class="card">
                 <div class="card-body">
+                    <c:if test="${login == null}">
+                        <a href="/members/sign-in">댓글은 로그인 후 작성해주세요!!</a>
+                    </c:if>
+                    <c:if test="${login != null}">
                     <div class="row">
                         <div class="col-md-9">
                             <div class="form-group">
@@ -64,8 +68,8 @@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="newReplyWriter" hidden>댓글 작성자</label>
-                                <input id="newReplyWriter" name="replyWriter" type="text"
-                                       class="form-control" placeholder="작성자 이름"
+                                <input id="newReplyWriter" name="replyWriter" type="text" value="${login.nickName}" readonly
+                                       class="form-control" placeholder="${login.nickName}"
                                        style="margin-bottom: 6px;">
                                 <button id="replyAddBtn" type="button"
                                         class="btn btn-dark form-control">등록
@@ -73,6 +77,7 @@
                             </div>
                         </div>
                     </div>
+                    </c:if>
                 </div>
             </div> <!-- end reply write -->
 

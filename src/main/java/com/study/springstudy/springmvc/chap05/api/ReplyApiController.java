@@ -3,8 +3,10 @@ package com.study.springstudy.springmvc.chap05.api;
 import com.study.springstudy.springmvc.chap04.common.Page;
 import com.study.springstudy.springmvc.chap05.dto.request.ReplyModifyDto;
 import com.study.springstudy.springmvc.chap05.dto.request.ReplyPostDto;
+import com.study.springstudy.springmvc.chap05.dto.response.LoginUserInfoDto;
 import com.study.springstudy.springmvc.chap05.dto.response.ReplyListDto;
 import com.study.springstudy.springmvc.chap05.service.ReplyService;
+import com.study.springstudy.springmvc.util.LoginUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +35,8 @@ public class ReplyApiController {
     @GetMapping("/{bno}/page/{pageNo}") // <- 변수가 들어와야 하므로 중괄호 안에 지정해줌
     public ResponseEntity<?> list(
             @PathVariable long bno // <- bno를 받기 위해
-            , @PathVariable int pageNo) {
+            , @PathVariable int pageNo
+    , HttpSession session) {
 
         if (bno == 0) {
             String message = "글 번호는 0번이 될 수 없습니다.";
@@ -45,6 +49,7 @@ public class ReplyApiController {
 
         ReplyListDto replies = replyService.getReplies(bno, new Page(pageNo, 10));
 //        log.debug("first reply : {}", replies.get(0));
+        replies.setLoginUser(LoginUtil.getLoggedInUser(session));
 
         return ResponseEntity
                 .ok()
@@ -54,7 +59,8 @@ public class ReplyApiController {
     // 댓글 생성 요청
     // @RequestBody : 클라이언트가 전송한 데이터를 JSON으로 받아서 파싱
     @PostMapping // ("")를 비워두면 위에 @RequestMapping("/api/v1/replies")
-    public ResponseEntity<?> posts(@Validated @RequestBody ReplyPostDto dto, BindingResult result) {
+    public ResponseEntity<?> posts(@Validated @RequestBody ReplyPostDto dto, BindingResult result
+    , HttpSession session) {
 
         // BindingResult 는 입력값 검증 결과 데이터를 갖고 있는 객체.
         // 입력값이 유효하지 않다면 클라이언트에게 구체적으로 알려줄 객체
@@ -73,7 +79,7 @@ public class ReplyApiController {
                     .body(errors);
         }
 
-        boolean flag = replyService.register(dto);
+        boolean flag = replyService.register(dto, session);
 
         if (!flag) return ResponseEntity.internalServerError().body("댓글 등록 실패");
 

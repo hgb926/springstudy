@@ -32,7 +32,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
         registry
                 .addInterceptor(boardInterceptor)
                 .addPathPatterns("/board/delete") // board/delete에서 작동하도록
-                .excludePathPatterns("/board/list", "/board/detail"); // 여긴 제외
+                .excludePathPatterns("/board/list", "/board/detail",
+                        "/board/like", "/board/dislike"); // 여긴 제외
 
 
         // 자동로그인 인터셉터 등록

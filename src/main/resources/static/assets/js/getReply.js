@@ -135,9 +135,10 @@ let loadedReplies = 0; // 로딩된 댓글 수
 
 function appendReplies({ replies, loginUser }) {
     // 댓글 목록 렌더링
+    console.log(replies);
     let tag = '';
     if (replies && replies.length > 0) {
-        replies.forEach(({ reply_no: rno, writer, text, createAt, account: replyAccount }) => {
+        replies.forEach(({ rno, writer, text, createAt, account: replyAccount }) => {
             tag += `
         <div id='replyContent' class='card-body' data-reply-id='${rno}'>
             <div class='row user-block'>
@@ -160,7 +161,7 @@ function appendReplies({ replies, loginUser }) {
 
                 if (auth === 'ADMIN' || replyAccount === loginUserAccount) {
                     tag += `<a id='replyModBtn' class='btn btn-sm btn-outline-dark' data-bs-toggle='modal' data-bs-target='#replyModifyModal'>수정</a>&nbsp;
-                <a id='replyDelBtn' class='btn btn-sm btn-outline-dark' href='#'>삭제</a>
+                            <a id='replyDelBtn' class='btn btn-sm btn-outline-dark' href='#'>삭제</a>
                 `;
                 }
             }

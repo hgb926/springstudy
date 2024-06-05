@@ -17,6 +17,8 @@ public class ReplyDetailDto {
     private long rno;
     private String text;
     private String writer;
+    // profile, get 요청 어디서 확인?
+    private String profile;
 
 //    @JsonFormat(pattern = "yyyy년 MM월 dd일 HH:mm")
     private LocalDateTime createAt;
@@ -29,6 +31,7 @@ public class ReplyDetailDto {
         this.writer = reply.getReplyWriter();
         this.createAt = reply.getReplyDate();
         this.account = reply.getAccount();
+        this.profile = reply.getProfile();
     }
 
 }

@@ -7,9 +7,10 @@
 
     <link rel="stylesheet" href="/assets/css/detail.css">
 </head>
+
 <body>
 <%@ include file="../include/header.jsp"%>
-<div id="wrap" class="form-container" data-bno="${bbb.boardNo}">
+<div id="wrap" class="form-container" data-bno="${bbb.boardNo}" data-profile="${login.profile}">
 
     <h1>${bbb.boardNo}번 게시물 내용~ </h1>
     <h2># 작성일자: ${bbb.regDateTime}</h2>
@@ -74,6 +75,16 @@
                                 <button id="replyAddBtn" type="button"
                                         class="btn btn-dark form-control">등록
                                 </button>
+                                <div class="profile-box">
+                                    <c:choose>
+                                        <c:when test="${login != null && login.profile != null}">
+                                            <img src="${login.profile}" alt="프로필 사진">
+                                        </c:when>
+                                        <c:otherwise>
+                                            <img src="/assets/img/anonymous.jpg" alt="프로필 사진">
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -211,6 +222,9 @@
     document.getElementById('dislike-btn').addEventListener('click', e => {
         sendReaction('dislike');
     });
+
+
+
 </script>
 
 

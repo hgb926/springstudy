@@ -11,7 +11,16 @@
         </h1>
 
         <div class="profile-box">
-            <img src="${login.profile}" alt="프로필 사진">
+            <c:choose>
+                <%--  choose는 if, else    --%>
+                <%--  로그인 했고, 프사도 있으면   --%>
+                <c:when test="${login != null && login.profile != null}">
+                <img src="${login.profile}" alt="프로필 사진">
+                </c:when>
+                <c:otherwise>
+                    <img src="/assets/img/anonymous.jpg" alt="프로필 사진">
+                </c:otherwise>
+            </c:choose>
         </div>
 
         <h2 class="intro-text"> Welcome ${login.nickName}</h2>

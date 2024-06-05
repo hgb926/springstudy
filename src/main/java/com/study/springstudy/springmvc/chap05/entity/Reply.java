@@ -31,4 +31,7 @@ public class Reply {
     private long boardNo;
     private String account;
 
+    // 조인해서 받아온 댓글 작성자의 프로필url
+    private String profile;
+
 }

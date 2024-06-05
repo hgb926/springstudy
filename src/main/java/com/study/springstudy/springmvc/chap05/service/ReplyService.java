@@ -66,7 +66,7 @@ public class ReplyService {
     }
 
     // 댓글 삭제
-    @Transactional
+//    @Transactional
     public ReplyListDto remove(long rno) {
         // 댓글 번호로 원본 글번호 찾기
         long bno = replyMapper.findBno(rno);

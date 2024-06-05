@@ -13,7 +13,8 @@ export const fetchReplyPost = async () => {
     const payload = {
         text: textInput.value,
         author: writerInput.value,
-        bno: document.getElementById('wrap').dataset.bno
+        bno: document.getElementById('wrap').dataset.bno,
+        profile: document.getElementById('wrap').dataset.profile
     };
     console.log(payload);
 

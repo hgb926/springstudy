@@ -115,6 +115,8 @@ export async function fetchReplies(pageNo = 1) {
 
     // 댓글 목록 렌더링
     renderReplies(replyResponse);
+
+    console.log(replyResponse)
 }
 
 // 페이지 클릭 이벤트 생성 함수
@@ -135,22 +137,33 @@ let loadedReplies = 0; // 로딩된 댓글 수
 
 function appendReplies({ replies, loginUser }) {
     // 댓글 목록 렌더링
-    console.log(replies);
+
+
+    // replies엔 account가 있고 거기서 데이터를 받아오면 될듯
+
+    // console.log(loginUser) // 현재 로그인한 유저
     let tag = '';
     if (replies && replies.length > 0) {
-        replies.forEach(({ rno, writer, text, createAt, account: replyAccount }) => {
+        replies.forEach(({ profile, rno, writer, text, createAt, account: replyAccount }) => {
             tag += `
         <div id='replyContent' class='card-body' data-reply-id='${rno}'>
             <div class='row user-block'>
                 <span class='col-md-3'>
-                    <b>${writer}</b>
-                </span>
+                    <b>작성자: ${writer}</b>`;
+
+                if (profile) {
+
+                 tag +=   `<div class="reply-profile-box"><img src="${profile}" alt="프로필 사진" class="reply-profile"></div>`
+                } else {
+                 tag +=  `<div class="reply-profile-box"><img src="/assets/img/anonymous.jpg" alt="프로필 사진" class="reply-profile"></div>`
+                }
+                tag += `</span>
                 <span class='offset-md-6 col-md-3 text-right'><b>${getRelativeTime(
                 createAt
             )}</b></span>
             </div><br>
             <div class='row'>
-                <div class='col-md-9'>${text}</div>
+                <div class='col-md-9'>내용<br>${text}</div>
                 <div class='col-md-3 text-right'>
                 `;
 
@@ -170,13 +183,15 @@ function appendReplies({ replies, loginUser }) {
             tag += `</div>
             </div>
         </div>
+        <div style="margin-top: 10px"></div>
+        <hr style="color: gray">
         `;
         });
     } else {
         tag = `<div id='replyContent' class='card-body'>댓글이 아직 없습니다! ㅠㅠ</div>`;
     }
     document.getElementById('replyData').innerHTML += tag;
-    console.log('append replies');
+
 
     // 로드된 댓글 수 업데이트
     loadedReplies += replies.length;
@@ -206,7 +221,7 @@ export async function fetchInfScrollReplies(pageNo = 1) {
         document.getElementById('replyCnt').textContent = totalReplies;
         // 초기 댓글 reset
         document.getElementById('replyData').innerHTML = '';
-        console.log('reset replyData');
+
 
         setupInfiniteScroll();
     }

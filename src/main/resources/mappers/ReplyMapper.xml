@@ -24,8 +24,24 @@
         WHERE reply_no = #{replyNo}
     </delete>
 
+<!--    <select id="findAll" resultType="reply">-->
+<!--        SELECT * FROM tbl_reply-->
+<!--        WHERE board_no = #{bno}-->
+<!--        ORDER BY reply_no-->
+<!--        LIMIT #{p.pageStart}, #{p.amount}-->
+<!--    </select>-->
+<!--  member랑 조인해서 프사 갖고옴  -->
     <select id="findAll" resultType="reply">
-        SELECT * FROM tbl_reply
+        SELECT
+        R.account,
+        M.profile_img as profile,
+        R.reply_no,
+        R.reply_text,
+        R.reply_writer,
+        R.reply_date,
+        R.board_no
+        FROM tbl_member M JOIN tbl_reply R
+        ON M.account = R.account
         WHERE board_no = #{bno}
         ORDER BY reply_no
         LIMIT #{p.pageStart}, #{p.amount}

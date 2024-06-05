@@ -31,4 +31,8 @@ public class Member {
     private LocalDateTime regDate;
     private String sessionId;
     private LocalDateTime limitTime;
+
+    // 0605 프사 필드 추가
+    @Setter
+    private String profileImg;
 }

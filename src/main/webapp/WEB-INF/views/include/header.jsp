@@ -9,7 +9,12 @@
                 <img src="/assets/img/logo.png" alt="로고이미지">
             </a>
         </h1>
-        <h2 class="intro-text">Welcome ${login.nickName}</h2>
+
+        <div class="profile-box">
+            <img src="${login.profile}" alt="프로필 사진">
+        </div>
+
+        <h2 class="intro-text"> Welcome ${login.nickName}</h2>
         <a href="#" class="menu-open">
             <span class="menu-txt">MENU</span>
             <span class="lnr lnr-menu"></span>

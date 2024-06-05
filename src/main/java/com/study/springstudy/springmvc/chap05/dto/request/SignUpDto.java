@@ -3,6 +3,7 @@ package com.study.springstudy.springmvc.chap05.dto.request;
 
 import com.study.springstudy.springmvc.chap05.entity.Member;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -35,6 +36,10 @@ public class SignUpDto {
     @NotBlank
     @Email
     private String email;
+
+    // 프로필 사진 데이터가 추가로 옴 - 0605
+    private MultipartFile profileImage; // 필드명은 input태그의 name.
+
 
     public Member toEntity() {
         return Member.builder()

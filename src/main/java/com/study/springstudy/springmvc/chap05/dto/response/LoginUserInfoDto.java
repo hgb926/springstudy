@@ -16,6 +16,7 @@ public class LoginUserInfoDto {
     private String nickName;
     private String email;
     private String auth; // enum -> String으로 바꿔서 보냄
+    private String profile; // 프로필 사진 경로 - 0605
 
     public LoginUserInfoDto(Member member) {
         this.account = member.getAccount();
@@ -25,6 +26,8 @@ public class LoginUserInfoDto {
 //        Auth.ADMIN
         this.auth = member.getAuth().name();
 //        ADMIN
+
+        this.profile = member.getProfileImg();
     }
 
 }

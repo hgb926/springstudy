@@ -6,9 +6,11 @@ import com.study.springstudy.springmvc.chap05.dto.response.LoginUserInfoDto;
 import com.study.springstudy.springmvc.chap05.service.LoginResult;
 import com.study.springstudy.springmvc.chap05.service.MemberService;
 import com.study.springstudy.springmvc.interceptor.BoardInterceptor;
+import com.study.springstudy.springmvc.util.FileUtil;
 import com.study.springstudy.springmvc.util.LoginUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,6 +31,10 @@ public class MemberController {
     private final MemberService memberService;
     private final BoardInterceptor interceptor;
 
+    // application.properties 에 있는 값을 주입받음.
+    @Value("${file.upload.root-path}")
+    private String rootPath;
+
     // 회원가입 양식 열기
     @GetMapping("/sign-up")
     public void signUp() {
@@ -42,7 +48,15 @@ public class MemberController {
         log.info("/members/sign-up POST ");
         log.debug("parameter: {}", dto);
 
-        boolean flag = memberService.join(dto);
+        // 0605 추가 ~
+        log.debug("attached profile image name: {}", dto.getProfileImage().getOriginalFilename());
+
+        // 서버에 업로드 후 업로드 경로 반환
+        String profilePath = FileUtil.uploadFile(rootPath, dto.getProfileImage());
+
+        // ~ 0605
+
+        boolean flag = memberService.join(dto, profilePath);
 
         return flag ? "redirect:/members/sign-in" : "redirect:/members/sign-up";
     }

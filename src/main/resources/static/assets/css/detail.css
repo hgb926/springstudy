@@ -202,7 +202,9 @@ button.list-btn {
     height: 80%;
     position: absolute;
     z-index: 15;
-    bottom: 500px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     cursor: pointer;
 }
 .modal-profile img {

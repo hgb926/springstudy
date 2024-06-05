@@ -194,3 +194,28 @@ button.list-btn {
     overflow: hidden;
     cursor: pointer;
 }
+.modal-profile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80%;
+    height: 80%;
+    position: absolute;
+    z-index: 15;
+    bottom: 500px;
+    cursor: pointer;
+}
+.modal-profile img {
+    width: 80%;
+    height: 80%;
+    background: center/cover no-repeat fixed;
+    overflow: hidden;
+    border: 5px black solid;
+}
+.reply-profile-box .none {
+    display: none;
+}
+
+.reply-profile-box {
+    cursor: pointer;
+}

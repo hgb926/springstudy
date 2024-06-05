@@ -30,7 +30,7 @@
 <!--        ORDER BY reply_no-->
 <!--        LIMIT #{p.pageStart}, #{p.amount}-->
 <!--    </select>-->
-<!--  member랑 조인해서 프사 갖고옴  -->
+<!--  member랑 조인해서 프사 갖고옴  0605  -->
     <select id="findAll" resultType="reply">
         SELECT
         R.account,

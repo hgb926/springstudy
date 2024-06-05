@@ -153,9 +153,16 @@ function appendReplies({ replies, loginUser }) {
 
                 if (profile) {
 
-                 tag +=   `<div class="reply-profile-box"><img src="${profile}" alt="프로필 사진" class="reply-profile"></div>`
+                 tag +=   `<div class="reply-profile-box">
+                                <img src="${profile}" alt="프로필 사진" class="reply-profile">
+                                <div class="none modal-profile">
+                                <img src="${profile}" alt="프로필 사진">
+                                </div>
+                            </div>`
                 } else {
-                 tag +=  `<div class="reply-profile-box"><img src="/assets/img/anonymous.jpg" alt="프로필 사진" class="reply-profile"></div>`
+                 tag +=  `<div class="reply-profile-box">
+                                <img src="/assets/img/anonymous.jpg" alt="프로필 사진" class="reply-profile">
+                           </div>`
                 }
                 tag += `</span>
                 <span class='offset-md-6 col-md-3 text-right'><b>${getRelativeTime(
@@ -266,3 +273,17 @@ export function setupInfiniteScroll() {
 export function removeInfiniteScroll() {
     window.removeEventListener('scroll', scrollHandler);
 }
+
+
+document.getElementById('replyData').addEventListener('click', e => {
+    if (!e.target.matches('.reply-profile')) return;
+    console.log("click modal!")
+    const $modal = e.target.closest('.reply-profile-box').querySelector('.modal-profile');
+    console.log($modal);
+    if ($modal) {
+        $modal.classList.toggle('none');
+    }
+    $modal.addEventListener("click", e => {
+        $modal.classList.add('none')
+    })
+});
